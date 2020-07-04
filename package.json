@@ -1,11 +1,18 @@
 {
   "name": "inside-maps-homework-backend",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Assignment for InsideMaps",
-  "main": "index.js",
   "author": "atefth@gmail.com",
   "license": "MIT",
+  "private": true,
+  "scripts": {
+    "server": "node ./bin/www"
+  },
   "dependencies": {
-    "express": "^4.17.1"
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "dotenv": "^8.2.0",
+    "express": "~4.16.1",
+    "morgan": "~1.9.1"
   }
 }
