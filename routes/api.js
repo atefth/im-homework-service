@@ -4,7 +4,6 @@ const uploadController = require("../src/controllers/upload");
 
 let routes = (app) => {
   router.get("/", (req, res, next) => {
-    console.log(req.cookies);
     res.send({ status: "ok" });
   });
   router.post("/upload", uploadController.uploadImagesToS3);
