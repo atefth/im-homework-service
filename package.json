@@ -1,0 +1,11 @@
+{
+  "name": "inside-maps-homework-backend",
+  "version": "1.0.0",
+  "description": "Assignment for InsideMaps",
+  "main": "index.js",
+  "author": "atefth@gmail.com",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
