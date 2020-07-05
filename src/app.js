@@ -14,7 +14,35 @@ const app = express();
 var server = http.createServer(app);
 var io = socketIO(server);
 
+app.use(
+  session({
+    name: "im-homework",
+    secret: "Ts]KB+Mpa8R`",
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+      expires: new Date(Date.now() + 3600000),
+      secure: false,
+    },
+    genid: function (req) {
+      return uuidv4();
+    },
+  })
+);
 app.use(cors());
+app.use(function (req, res, next) {
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, OPTIONS, PUT, PATCH, DELETE"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "X-Requested-With,content-type"
+  );
+  res.setHeader("Access-Control-Allow-Credentials", true);
+  next();
+});
 app.use(function (req, res, next) {
   res.io = io;
   next();
@@ -24,17 +52,6 @@ app.use(
   bodyParser.urlencoded({
     limit: "50mb",
     extended: true,
-  })
-);
-app.use(
-  session({
-    secret: "Ts]KB+Mpa8R`",
-    resave: true,
-    saveUninitialized: true,
-    cookie: { expires: new Date(Date.now() + 3600000), maxAge: 3600000 },
-    genid: function (req) {
-      return uuidv4();
-    },
   })
 );
 app.use(express.static(path.join(__dirname, "public")));

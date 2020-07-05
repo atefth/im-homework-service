@@ -18,7 +18,7 @@ const uploader = (req, res, cb) => {
   files.map((file, index) => {
     const params = {
       Bucket: process.env.AWS_BUCKET_NAME,
-      Key: `${file.originalname}-${new Date().toISOString()}`,
+      Key: `${sessionId}/${file.originalname}-${new Date().toISOString()}`,
       Body: file.buffer,
       Metadata: { sessionId, resizeTo },
     };
@@ -36,6 +36,27 @@ const uploader = (req, res, cb) => {
   });
 };
 
+const prober = (req, res, cb) => {
+  const { session } = req;
+  const sessionId = session.id;
+  const params = {
+    Bucket: process.env.AWS_BUCKET_NAME,
+    Delimiter: "/",
+    Prefix: `resized/${sessionId}/`,
+  };
+  s3.listObjects(params, cb);
+};
+
+const reader = (key, cb) => {
+  const params = {
+    Bucket: process.env.AWS_BUCKET_NAME,
+    Key: key,
+  };
+  s3.getObject(params, cb);
+};
+
 module.exports = {
   uploader,
+  prober,
+  reader,
 };
