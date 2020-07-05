@@ -7,7 +7,7 @@ dotenv.config();
  * Module dependencies.
  */
 
-var app = require("../app");
+var app = require("../src/app").app;
 var debug = require("debug")("inside-maps-homework-backend:server");
 var http = require("http");
 
@@ -17,12 +17,13 @@ var http = require("http");
 
 var port = normalizePort(process.env.PORT || "3000");
 app.set("port", port);
+app.set("trust proxy", 1);
 
 /**
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
+var server = require("../src/app").server;
 
 /**
  * Listen on provided port, on all network interfaces.

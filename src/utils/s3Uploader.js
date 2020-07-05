@@ -1,42 +1,39 @@
 const AWS = require("aws-sdk");
-const multer = require("multer");
-const multerS3 = require("multer-s3");
-
 const s3 = new AWS.S3({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   region: process.env.AWS_REGION,
-  // Bucket: process.env.AWS_BUCKET_NAME,
+  Bucket: process.env.AWS_BUCKET_NAME,
 });
 
-const imageFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith("image")) {
-    cb(null, true);
-  } else {
-    cb("Please upload only images.", false);
-  }
+const s3Uploader = (req, res, cb) => {
+  const { session, files, body } = req;
+  const { visibility, resizeTo } = body;
+  const sessionId = session.id;
+  const { io } = res;
+  const uploadedFiles = [];
+  const totalSize = files.reduce((size, file) => {
+    return size + file.size;
+  }, 0);
+  let alreadyLoaded = 0;
+  files.map((file, index) => {
+    const params = {
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: file.originalname,
+      Body: file.buffer,
+      Metadata: { sessionId, resizeTo },
+    };
+    if (visibility) params.Tagging = "public=yes";
+    s3.upload(params, cb).on("httpUploadProgress", function (event) {
+      const { loaded, part } = event;
+      alreadyLoaded = alreadyLoaded + loaded;
+      const progress = (alreadyLoaded / totalSize) * 100;
+      io.emit("uploadProgress", {
+        progress,
+      });
+    });
+  });
 };
-
-const multerS3Config = multerS3({
-  s3: s3,
-  bucket: process.env.AWS_BUCKET_NAME,
-  // acl: "public-read",
-  metadata: function (req, file, cb) {
-    cb(null, { fieldName: file.fieldname, public: "yes" });
-  },
-  key: function (req, file, cb) {
-    console.log(file);
-    cb(null, new Date().toISOString() + "-" + file.originalname);
-  },
-});
-
-const s3Uploader = multer({
-  storage: multerS3Config,
-  fileFilter: imageFilter,
-  limits: {
-    fileSize: 1024 * 1024 * process.env.MAX_FILE_SIZE,
-  },
-});
 
 module.exports = {
   s3Uploader,
