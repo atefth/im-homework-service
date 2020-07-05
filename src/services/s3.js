@@ -6,7 +6,7 @@ const s3 = new AWS.S3({
   Bucket: process.env.AWS_BUCKET_NAME,
 });
 
-const s3Uploader = (req, res, cb) => {
+const uploader = (req, res, cb) => {
   const { session, files, body } = req;
   const { visibility, resizeTo } = body;
   const sessionId = session.id;
@@ -37,5 +37,5 @@ const s3Uploader = (req, res, cb) => {
 };
 
 module.exports = {
-  s3Uploader,
+  uploader,
 };

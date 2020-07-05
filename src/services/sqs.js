@@ -10,7 +10,7 @@ const sqs = new AWS.SQS({ apiVersion: "2012-11-05" });
 const successQueueUrl = process.env.AWS_SQS_SUCCESS_QUEUE_URL;
 const failureQueueUrl = process.env.AWS_SQS_FAILRE_QUEUE_URL;
 
-const resizer = (success, data, cb) => {
+const resizeQueuer = (success, data, cb) => {
   const { Location, Bucket, Key, ETag, visibility, resizeTo, sessionId } = data;
   const resizeData = {
     MessageAttributes: {
@@ -60,5 +60,5 @@ const resizer = (success, data, cb) => {
 };
 
 module.exports = {
-  resizer,
+  resizeQueuer,
 };

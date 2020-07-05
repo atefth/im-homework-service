@@ -1,9 +1,9 @@
 const multer = require("multer");
-const { s3Uploader } = require("../services/s3Uploader");
-const { resizeQueuer } = require("../services/resizeQueuer");
+const { uploader } = require("../services/s3");
+const { resizeQueuer } = require("../services/sqs");
 const uploadImagesToS3 = (req, res, next) => {
   const response = { uploaded: [], failed: [] };
-  s3Uploader(req, res, (error, data) => {
+  uploader(req, res, (error, data) => {
     if (error) {
       response.failed.push(error);
       resizeQueuer(false, {
