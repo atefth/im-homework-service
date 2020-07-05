@@ -36,13 +36,15 @@ const uploader = (req, res, cb) => {
   });
 };
 
-const prober = (req, res, cb) => {
+const prober = (req, resized, cb) => {
   const { session } = req;
-  const sessionId = session.id;
+  // const sessionId = session.id;
+  const sessionId = "2c458f72-87ac-42e8-85b6-8cd531ae1351";
+  const prefix = resized ? `resized/${sessionId}/` : `${sessionId}/`;
   const params = {
     Bucket: process.env.AWS_BUCKET_NAME,
     Delimiter: "/",
-    Prefix: `resized/${sessionId}/`,
+    Prefix: prefix,
   };
   s3.listObjects(params, cb);
 };

@@ -1,7 +1,17 @@
 const { prober } = require("../services/s3");
 
 const resizeStatus = (req, res, next) => {
-  prober(req, res, (error, data) => {
+  prober(req, true, (error, data) => {
+    if (error) {
+      res.status(500).send({ success: false, error });
+    } else {
+      res.status(200).send({ success: true, data });
+    }
+  });
+};
+
+const uploadedStatus = (req, res, next) => {
+  prober(req, false, (error, data) => {
     if (error) {
       res.status(500).send({ success: false, error });
     } else {
@@ -12,4 +22,5 @@ const resizeStatus = (req, res, next) => {
 
 module.exports = {
   resizeStatus,
+  uploadedStatus,
 };
