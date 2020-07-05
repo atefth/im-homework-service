@@ -5,6 +5,7 @@ const statusController = require("../src/controllers/status");
 const { uploaderMiddleware } = require("../src/utils/middleware");
 
 let routes = (app) => {
+  router.get("/image", statusController.getImage);
   router.get("/images/uploaded", statusController.uploadedStatus);
   router.get("/images/resized", statusController.resizeStatus);
   router.post("/upload", uploaderMiddleware, uploadController.uploadImagesToS3);

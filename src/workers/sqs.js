@@ -20,11 +20,11 @@ const queueUrl = process.env.AWS_SQS_SUCCESS_QUEUE_URL;
 function resizeImage(message) {
   let sqsMessage = JSON.parse(message.Body);
   const { ETag, Location, Key, visibility, resizeTo, sessionId } = sqsMessage;
-  reader(Key, function (sqsError, sqsData) {
-    if (sqsError) {
-      console.log(`SQSError | Error: ${sqsError}`);
+  reader(Key, (s3ReadError, s3Image) => {
+    if (s3ReadError) {
+      console.log(`SQSError | Error: ${s3ReadError}`);
     } else {
-      const inputBuffer = new Buffer(sqsData.Body, "binary");
+      const inputBuffer = new Buffer(s3Image.Body, "binary");
       let resizeBy = [175, 175];
       switch (resizeTo) {
         case 0.75:
@@ -62,10 +62,6 @@ function resizeImage(message) {
           }
         });
     }
-
-    // res.writeHead(200, { "Content-Type": "image/jpeg" });
-    // res.write(data.Body, "binary");
-    // res.end(null, "binary");
   });
 }
 
