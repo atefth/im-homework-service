@@ -1,25 +1,39 @@
 const multer = require("multer");
-const { s3Uploader } = require("../utils/s3Uploader");
+const { s3Uploader } = require("../services/s3Uploader");
+const { resizeQueuer } = require("../services/resizeQueuer");
 const uploadImagesToS3 = (req, res, next) => {
-  s3Uploader(req, res, (err, data) => {
-    if (err) {
-      console.log(err);
+  const response = { uploaded: [], failed: [] };
+  s3Uploader(req, res, (error, data) => {
+    if (error) {
+      response.failed.push(error);
+      resizeQueuer(false, {
+        ...data,
+        visibility: req.body.visibility,
+        resizeTo: req.body.resizeTo,
+        sessionId: req.session.id,
+      });
     } else {
-      console.log(data);
+      response.uploaded.push(data);
+      resizeQueuer(true, {
+        ...data,
+        visibility: req.body.visibility,
+        resizeTo: req.body.resizeTo,
+        sessionId: req.session.id,
+      });
+    }
+    if (
+      response.uploaded.length + response.failed.length ===
+      req.files.length
+    ) {
+      if (response.uploaded.length) {
+        response.success = true;
+        res.status(200).send(response);
+      } else {
+        response.success = false;
+        res.status(500).send(response);
+      }
     }
   });
-  // uploader(req, res, (err) => {
-  //   if (err instanceof multer.MulterError) {
-  //     if (err.code === "LIMIT_UNEXPECTED_FILE") {
-  //       return res.status(500).send({ error: "File upload limit exceeded!" });
-  //     }
-  //   } else if (err) {
-  //     return res.status(500).send({ error: err });
-  //   }
-  //   res
-  //     .status(200)
-  //     .send({ success: true, message: "Files were uploaded to S3!" });
-  // });
 };
 
 module.exports = {

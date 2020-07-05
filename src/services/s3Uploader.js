@@ -11,7 +11,6 @@ const s3Uploader = (req, res, cb) => {
   const { visibility, resizeTo } = body;
   const sessionId = session.id;
   const { io } = res;
-  const uploadedFiles = [];
   const totalSize = files.reduce((size, file) => {
     return size + file.size;
   }, 0);
@@ -19,19 +18,21 @@ const s3Uploader = (req, res, cb) => {
   files.map((file, index) => {
     const params = {
       Bucket: process.env.AWS_BUCKET_NAME,
-      Key: file.originalname,
+      Key: `${file.originalname}-${new Date().toISOString()}`,
       Body: file.buffer,
       Metadata: { sessionId, resizeTo },
     };
     if (visibility) params.Tagging = "public=yes";
-    s3.upload(params, cb).on("httpUploadProgress", function (event) {
-      const { loaded, part } = event;
-      alreadyLoaded = alreadyLoaded + loaded;
-      const progress = (alreadyLoaded / totalSize) * 100;
-      io.emit("uploadProgress", {
-        progress,
-      });
-    });
+    s3.upload(params)
+      .on("httpUploadProgress", function (event) {
+        const { loaded } = event;
+        alreadyLoaded = alreadyLoaded + loaded;
+        const progress = (alreadyLoaded / totalSize) * 100;
+        io.emit("uploadProgress", {
+          progress,
+        });
+      })
+      .send(cb);
   });
 };
 
