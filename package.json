@@ -7,8 +7,9 @@
   "private": true,
   "scripts": {
     "server": "node ./bin/www",
-    "live": "nodemon ./bin/www",
-    "worker": "nodemon ./src/workers/sqs.js"
+    "live-server": "nodemon ./bin/www",
+    "worker": "node ./src/workers/sqs.js",
+    "live-worker": "nodemon ./src/workers/sqs.js"
   },
   "dependencies": {
     "aws-sdk": "^2.709.0",
