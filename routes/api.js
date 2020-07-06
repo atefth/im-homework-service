@@ -9,6 +9,7 @@ let routes = (app) => {
   router.get("/images/uploaded", statusController.uploadedStatus);
   router.get("/images/resized", statusController.resizeStatus);
   router.post("/upload", uploaderMiddleware, uploadController.uploadImagesToS3);
+  router.get("/resized", statusController.resizedImage);
   return app.use(router);
 };
 

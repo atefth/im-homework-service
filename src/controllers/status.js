@@ -31,8 +31,15 @@ const getImage = (req, res, next) => {
   });
 };
 
+const resizedImage = (req, res, next) => {
+  const { originalKey, resizedKey } = req.query;
+  res.io.emit("resizedImage", { originalKey, resizedKey });
+  res.status(200).send({ success: true });
+};
+
 module.exports = {
   resizeStatus,
   uploadedStatus,
   getImage,
+  resizedImage,
 };

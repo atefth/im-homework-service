@@ -41,6 +41,7 @@ const uploader = (req, res, cb) => {
 const prober = (req, resized, cb) => {
   const { session } = req;
   const sessionId = session.id;
+  // const sessionId = "9f256b6e-01fa-4ea2-9500-a1132c67bbb5";
   const prefix = resized ? `resized/${sessionId}/` : `${sessionId}/`;
   const params = {
     Bucket: process.env.AWS_BUCKET_NAME,

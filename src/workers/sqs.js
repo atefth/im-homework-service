@@ -1,7 +1,9 @@
 const dotenv = require("dotenv");
 dotenv.config();
 
-const { reader, uploader } = require("../services/s3");
+const axios = require("axios");
+
+const { reader } = require("../services/s3");
 const sharp = require("sharp");
 const { Consumer } = require("sqs-consumer");
 const AWS = require("aws-sdk");
@@ -56,6 +58,13 @@ function resizeImage(message) {
               if (s3Error) {
                 console.log(`S3Error | Error: ${s3Error}`);
               } else {
+                console.log("Updating resize socket");
+                axios
+                  .get(`http://localhost:${process.env.PORT}/resized`, {
+                    params: { originalKey: Key, resizedKey: `resized/${Key}` },
+                  })
+                  .then(({ data }) => console.log(data))
+                  .catch((error) => console.log(error));
                 console.log(`S3Upload | SUCCESS: ${data}`);
               }
             });
